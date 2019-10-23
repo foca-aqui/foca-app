@@ -9,7 +9,8 @@ import "./body.css"
 const initialState = {
     "search": "",
     "ocorrencias": null,
-    "bairros": null
+    "bairros": null,
+    "status": null
 }
 const API_HOST = "http://localhost:8000/api/"
 
@@ -40,10 +41,15 @@ export default class Login extends Component {
                 url: `${API_HOST}`,
                 params: params
             })
-            if(response) {
+            if(response && !response.data.status) {
                 this.setState({ 
                     ocorrencias: response.data.top_ocorrencias,
-                    bairros: response.data.bairros
+                    bairros: response.data.bairros,
+                    status: null
+                })
+            } else {
+                this.setState({
+                    status: "Ainda não há dados sobre este bairro"
                 })
             }
             
@@ -54,11 +60,14 @@ export default class Login extends Component {
         return (
             <div className="main row">
                 <div className="search col-sm-5">
-                    <b>Que bairro você quer consultar ?</b><br></br>
-                    <input onChange={this.inputChange} type="text" id="search" className="form-control" placeholder="Digite um bairro..."></input>
-                    <button onClick={this.search} className="search-btn"><i class="fa fa-arrow-circle-right fa-3" aria-hidden="true"></i></button>
-                    
-                    <Info ocorrencias={this.state.ocorrencias} bairros={this.state.bairros} search={this.state.search}/>
+                    <div className="search-box">
+                        <b>Que bairro você quer consultar ?</b><br></br>
+                        <div>
+                            <input onChange={this.inputChange} type="text" id="search" className="form-control" placeholder="Digite um bairro..."></input>
+                            <button onClick={this.search} className="search-btn"><i class="fa fa-arrow-circle-right fa-3" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    <Info state={this.state}/>
                 </div>
                 <div className="middle col-sm-2"></div>
                 <div className="panel-right col-sm-5"></div>

@@ -1,13 +1,13 @@
 html, body {
     height: 100%;
-    background-color: #d7e0e0;
+    background-color: #FFF;
 }
 .app {
     height: 100%;
 }
 .header {
     margin: 30px 10px 60px;
-    background-color: #d7e0e0;
+    background-color: #FFF;
 }
 .header-img {
     width: 100%;

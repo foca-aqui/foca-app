@@ -3,12 +3,12 @@ import React, {Fragment} from 'react'
 import "./info.css"
 
 export default props => {
-    if (props.ocorrencias) {
+    if (props.state.ocorrencias && !props.state.status) {
         return (
             <Fragment>
-                <label>Dados de {props.search} e mais {props.bairros.length} bairros</label>
+                <b><i>Dados de {props.state.search} e mais {props.state.bairros.length} bairros</i></b>
                 <ul className="search-results">
-                    { props.ocorrencias.map( ocorrencias => (
+                    { props.state.ocorrencias.map( ocorrencias => (
                         <Fragment>
                             {Object.keys(ocorrencias).map( (key, value) => (
                                 <li> <label className="info-name">{ocorrencias[key]}</label> <label className="info-value">{key}</label> </li>
@@ -19,6 +19,6 @@ export default props => {
             </Fragment>
         )
     } else {
-        return( <ul> </ul>)
+        return( <b> {props.state.status} </b>)
     }
 }
