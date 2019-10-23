@@ -38,10 +38,11 @@ export default class Login extends Component {
             }
             let response = await axios({
                 method: "get",
-                url: `${API_HOST}`,
+                url: `${API_HOST}oc/`,
                 params: params
             })
             if(response && !response.data.status) {
+
                 this.setState({ 
                     ocorrencias: response.data.top_ocorrencias,
                     bairros: response.data.bairros,

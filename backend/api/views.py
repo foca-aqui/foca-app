@@ -1,8 +1,9 @@
 # coding: utf-8 -*-
 from datetime import datetime
+from django.db.models.query import QuerySet
 from api.mixins import APIViewMixin
 
-from data.models import Bairro, OcorrenciasMesData, PoliciaDpsAreas
+from data.models import Bairro, OcorrenciasMesData, PoliciaDpsAreas, ZonasEleitorais, VotacaoMunZona
 
 CRIMES_VIOLENTOS = ["roubo_transeunte", "roubo_celular", "lesao_corp_dolosa", "outros_roubos", "roubo_veiculo", "roubo_comercio", "roubo_em_coletivo", "tentat_hom", "roubo_apos_saque", "estupro", "roubo_bicicleta", "roubo_carga", "roubo_residencia", "hom_doloso", "hom_por_interv_policial", "roubo_conducao_saque", "roubo_banco", "sequestro_relampago", "sequestro", "latrocinio", "lesao_corp_morte", "pol_civis_mortos_serv", "pol_militares_mortos_serv"]
 
@@ -28,6 +29,52 @@ CRIMES_DICT = {
     "latrocinio": "Latrocinio", 
     "lesao_corp_morte": "Lesão corporal seg. moerte"
     }
+
+class ParlamentaresView(APIViewMixin):
+    get_services = ("get_parlamentares_by_bairros")
+
+    def _get_parlamentares_by_bairros(self, data):
+        response = {}
+
+        bairros_str = data.get("bairros")
+        if bairros_str:
+            bairros = bairros_str.split(",")
+            zonas = []
+
+            for b in bairros:
+                b_zonas = ZonasEleitorais.objects.all().filter(
+                    bairro=b.upper()
+                )
+                for z in b_zonas:
+                    zonas.append(z.num)
+            
+            parlamentares_queryes = VotacaoMunZona.objects.none()
+            for z in zonas:
+                votacao = VotacaoMunZona.objects.all().filter(
+                    zona=z
+                ).order_by("-votos")[:5]
+                
+                parlamentares_queryes = parlamentares_queryes.union(votacao)
+            
+            parlamentares = [p.to_json_simple() for p in parlamentares_queryes.order_by("-votos")]
+            
+            result = {}
+            for p in parlamentares:
+                if p["nome_urna_candidato"] in result:
+                    result[p["nome_urna_candidato"]]["votos"] += p["votos"]
+                else:
+                    result[p["nome_urna_candidato"]] = {
+                        "cargo": p["cargo"],
+                        "sigla_partido": p["sigla_partido"],
+                        "votos": p["votos"]
+                    }
+            #import pdb; pdb.set_trace()
+            import operator
+            r = sorted(result.items(), key=lambda kv: kv[1]["votos"])
+            response = r               
+        
+        return response
+
 
 class OcorrenciasView(APIViewMixin):
     get_services = ("get_ocorrencias", "get_top_ocorrencias", "get_ocorrencias_by_bairro", "get_top_ocorrencias_by_bairro")
