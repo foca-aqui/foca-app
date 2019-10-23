@@ -4,6 +4,7 @@ import 'babel-polyfill';
 import qs from "qs"
 
 import Info from "./info"
+import Parlamentares from "./parlamentares"
 import "./body.css"
 
 const initialState = {
@@ -42,12 +43,27 @@ export default class Login extends Component {
                 params: params
             })
             if(response && !response.data.status) {
-
-                this.setState({ 
-                    ocorrencias: response.data.top_ocorrencias,
-                    bairros: response.data.bairros,
-                    status: null
+                var brs = ""
+                for (var i = 0; i < response.data.bairros.length; i++) {
+                    brs += response.data.bairros[i] + ","
+                }
+                let res = await axios({
+                    method: "get",
+                    url: `${API_HOST}ve/`,
+                    params: {
+                        "cmd": "get_parlamentares_by_bairros",
+                        "bairros": brs
+                    }
                 })
+                if (res) {
+                    this.setState({ 
+                        ocorrencias: response.data.top_ocorrencias,
+                        bairros: response.data.bairros,
+                        parlamentares: res.data,
+                        status: null
+                    })
+                    console.log(this.state.parlamentares)
+                }
             } else {
                 this.setState({
                     status: "Ainda não há dados sobre este bairro"
@@ -71,7 +87,9 @@ export default class Login extends Component {
                     <Info state={this.state}/>
                 </div>
                 <div className="middle col-sm-2"></div>
-                <div className="panel-right col-sm-5"></div>
+                <div className="panel-right col-sm-5">
+                    <Parlamentares data={this.state.parlamentares} />
+                </div>
             </div>
         )
     }

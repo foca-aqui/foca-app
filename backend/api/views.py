@@ -48,30 +48,31 @@ class ParlamentaresView(APIViewMixin):
                 for z in b_zonas:
                     zonas.append(z.num)
             
-            parlamentares_queryes = VotacaoMunZona.objects.none()
+            votacao_federal = {}
+            votacao_estadual = {}
             for z in zonas:
-                votacao = VotacaoMunZona.objects.all().filter(
-                    zona=z
+                vf = VotacaoMunZona.objects.all().filter(
+                    zona=z,
+                    cargo="Deputado Federal"
                 ).order_by("-votos")[:5]
+                for item in vf:
+                    if item.nome_urna_candidato in votacao_federal:
+                        votacao_federal[item.nome_urna_candidato]["votos"] += item.votos
+                    else:
+                        votacao_federal[item.nome_urna_candidato] = item.to_json_simple()
                 
-                parlamentares_queryes = parlamentares_queryes.union(votacao)
-            
-            parlamentares = [p.to_json_simple() for p in parlamentares_queryes.order_by("-votos")]
-            
-            result = {}
-            for p in parlamentares:
-                if p["nome_urna_candidato"] in result:
-                    result[p["nome_urna_candidato"]]["votos"] += p["votos"]
-                else:
-                    result[p["nome_urna_candidato"]] = {
-                        "cargo": p["cargo"],
-                        "sigla_partido": p["sigla_partido"],
-                        "votos": p["votos"]
-                    }
-            #import pdb; pdb.set_trace()
-            import operator
-            r = sorted(result.items(), key=lambda kv: kv[1]["votos"])
-            response = r               
+                ve = VotacaoMunZona.objects.all().filter(
+                    zona=z,
+                    cargo="Deputado Estadual"
+                ).order_by("-votos")[:5]
+                for item in ve:
+                    if item.nome_urna_candidato in votacao_estadual:
+                        votacao_estadual[item.nome_urna_candidato]["votos"] += item.votos
+                    else:
+                        votacao_estadual[item.nome_urna_candidato] = item.to_json_simple()
+
+            response["federais"] = votacao_federal           
+            response["estaduais"] = votacao_estadual
         
         return response
 
