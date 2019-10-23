@@ -1,0 +1,7 @@
+.search-results{
+    list-style: none;
+}
+
+.search-results li {
+    line-height: 10px;
+}

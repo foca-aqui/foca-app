@@ -1,0 +1,14 @@
+html, body {
+    height: 100%;
+    background-color: #d7e0e0;
+}
+.app {
+    height: 100%;
+}
+.header {
+    margin: 30px 10px 60px;
+    background-color: #d7e0e0;
+}
+.header-img {
+    width: 100%;
+}
