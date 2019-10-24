@@ -54,9 +54,6 @@ def populate_ocorrenciasmesdata(filepath=None, start_year=None):
                         else:
                             print(">>>> Já salvo %s/%s - %s" % (query[0].mes, query[0].ano, query[0].municipio))
                 
-
-
-
 def populate_votacao_municipio_zona(file_path=None):
     if not file_path:
         file_path = "data/csv/votacao_candidato_munzona_2018_RJ.csv"
@@ -123,86 +120,4 @@ def populate_zonas(file_path=None):
                         )
                         zona.save()
                         print(">>>> Salvando Zona %s" % zona.num)
-
-def populate_dps_areas(file_path=None):
-    if not file_path:
-        file_path = "data/csv/policia_dps_areas.csv"
-    
-    with open(file_path, encoding="utf8") as file:
-        csv_reader = csv.reader(file, delimiter=",")
-        line_count = 0
-        for row in csv_reader:
-            if line_count == 0:
-                header = row
-                line_count += 1
-            else:
-                if row[header.index("Município_da_DP")] == "Rio de Janeiro":
-                    area = PoliciaDpsAreas(
-                        nome=row[header.index("Nome_da_Delegacia")],
-                        batalhao=row[header.index("Batalhão")],
-                        aisp=row[header.index("AISP_2017")],
-                        risp=row[header.index("RISP")],
-                        municipio=row[header.index("Município_da_DP")]
-                    )
-                    area.save()
-                    print(">>>> Salvando ...")
-
-def populate_bairros_zonas(file_path=None):
-    if not file_path:
-        file_path = "data/csv/bairros_list.csv"
-    
-    with open(file_path, encoding="utf8") as file:
-        csv_reader = csv.reader(file, delimiter=",")
-        line_count = 0
-        for row in csv_reader:
-            if line_count == 0:
-                header = row
-                line_count += 1
-            else:
-                bairros = row[header.index("bairros")].split(", ")
-                for b in bairros:
-                    query = BairrosZonas.objects.all().filter(
-                        nome=b
-                    )
-                    if len(query) == 0:
-                        bz = BairrosZonas(
-                            nome=b,
-                            zona=int(row[0])
-                        )
-                        bz.save()
-                        print(">>>> Salvo %s" % bz.__str__())
-
-
-def populate_votacao_bairros(file_path=None):
-    if not file_path:
-        file_path = "data/csv/votacoes_bairros.csv"
-    
-    with open(file_path, encoding="utf8") as file:
-        csv_reader = csv.reader(file, delimiter=",")
-        line_count = 0
-        for row in csv_reader:
-            if line_count == 0:
-                header = row
-                line_count += 1
-            else:
-                query = VotacaoBairro.objects.all().filter(
-                    ano=int(row[header.index("ano")]),
-                    nome_candidato=row[header.index("nome_candidato")],
-                    zona=row[header.index("zona")]
-                )
-                if len(query) == 0:
-                    obj = VotacaoBairro(
-                        ano=int(row[header.index("ano")]),
-                        nome_candidato=row[header.index("nome_candidato")],
-                        zona=row[header.index("zona")],
-                        bairro=row[header.index("bairro")],
-                        partido=row[header.index("partido")],
-                        qt_votos=int(row[header.index("qt_votos")]),
-                        situacao=row[header.index("situacao")],
-                        total_votos=int(row[header.index("total_votos")]),
-                        proporcao=float(row[header.index("proporcao")])
-                    )
-                    obj.save()
-                    print(">>>> Salvando %s..." % obj.__str__())
-
 

@@ -2,6 +2,7 @@
 from django_mysql.models import Model, JSONField
 from django.db import models
 
+# Relação de bairros e AISP e RISP
 class Bairro(models.Model):
     nome = models.CharField(
         max_length=300
@@ -12,15 +13,7 @@ class Bairro(models.Model):
     def __str__(self):
         return self.nome
 
-class BairrosZonas(models.Model):
-    nome = models.CharField(
-        max_length=300
-    )
-    zona = models.IntegerField()
-
-    def __str__(self):
-        return "%s - %s" % (self.nome, self.zona)
-    
+# Ocorrências por mes    
 class OcorrenciasMesData(Model):
     cisp = models.IntegerField()
     mes = models.IntegerField()
@@ -55,37 +48,7 @@ class OcorrenciasMesData(Model):
 
         return data
 
-class VotacaoBairro(models.Model):
-    ano = models.IntegerField()
-    zona = models.IntegerField()
-    bairro = models.CharField(
-        max_length=300
-    )
-    nome_candidato = models.CharField(
-        max_length=300
-    )
-    partido = models.CharField(
-        max_length=300
-    )
-    qt_votos = models.IntegerField()
-    situacao = models.CharField(
-        max_length=300
-    )
-    total_votos = models.IntegerField()
-    proporcao = models.FloatField()
-
-    def __str__(self):
-        return "%s - %s" % (self.nome_candidato, self.bairro)
-
-    def to_json_simple(self):
-        data = {
-            "qt_votos": self.qt_votos,
-            "total_votos": self.total_votos,
-            "proporcao": self.proporcao 
-        }
-
-        return data
-
+# Votação por municipio e zona eleitoral
 class VotacaoMunZona(models.Model):
     ano = models.IntegerField()
     eleicao = models.CharField(
@@ -131,6 +94,7 @@ class VotacaoMunZona(models.Model):
 
         return data
 
+# Relaçao de bairros e zonas eleitorais
 class ZonasEleitorais(Model):
     num = models.IntegerField()
     municipio = models.CharField(
@@ -143,33 +107,3 @@ class ZonasEleitorais(Model):
 
     def __str__(self):
         return "%s - %s" % (self.bairro, self.num)
-
-class PoliciaDpsAreas(models.Model):
-    nome = models.CharField(
-        max_length=300
-    )
-    batalhao = models.CharField(
-        max_length=300
-    )
-    aisp = models.CharField(
-        max_length=300
-    )
-    risp = models.CharField(
-        max_length=300
-    )
-    municipio = models.CharField(
-        max_length=300
-    )
-
-    def __str__(self):
-        return self.nome
-
-    def to_json(self):
-        data = {
-            "id": self.id,
-            "nome": self.nome,
-            "batalhao": self.batalhao,
-            "aisp": self.aisp,
-            "risp": self.risp
-        }
-        return data
