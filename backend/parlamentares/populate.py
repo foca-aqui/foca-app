@@ -20,6 +20,25 @@ def populate_estaduais(file_path=None):
 
             print(">>>> Salvando %s" % obj.__str__())
 
+def populate_cmrj(file_path=None):
+    if not file_path:
+        file_path = "parlamentares/data/cmrj.json"
+    
+    with open(file_path) as file:
+        data = json.load(file)
+        for p in data:
+            obj = Parlamentar(
+                nome=p["nome"],
+                deputado="Vereador",
+                img_url=p["img_url"],
+                telefone=p["telefone"]
+            )
+            if "email" in p:
+                obj.email = p["email"]
+            obj.save()
+
+            print(">>>> Salvando %s" % obj.__str__())
+
 def populate_federais(file_path=None):
     if not file_path:
         file_path = "parlamentares/data/federais.csv"
