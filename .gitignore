@@ -5,6 +5,10 @@ backend/api/migrations/
 backend/data/__pycache__/
 backend/data/migrations/
 backend/data/csv/
+backend/parlamentares/__pycache__/
+backend/parlamentares/migrations/
+backend/parlamentares/scrapper/scrapper/__pycache__/
+backend/parlamentares/scrapper/scrapper/spiders/__pycache__/
 
 frontend/node_modules/
 frontend/package-lock.json
