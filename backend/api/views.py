@@ -3,11 +3,24 @@ from datetime import datetime
 from django.db.models.query import QuerySet
 from api.mixins import APIViewMixin
 
+from parlamentares.models import Parlamentar
 from data.models import Bairro, OcorrenciasMesData, ZonasEleitorais, VotacaoMunZona
 from api.constants import CRIMES_VIOLENTOS, CRIMES_DICT
 
 class ParlamentaresView(APIViewMixin):
-    get_services = ("get_parlamentares_by_bairros")
+    get_services = ("get_parlamentares_by_bairros", "get_parlamentar_details")
+
+    def _get_parlamentar_details(self, data):
+        response = {}
+        nome = data.get("nome")
+        if nome:
+            query = Parlamentar.objects.all().filter(
+                nome=nome.upper()
+            )
+            if len(query) > 0:
+                response = query[0].to_json()
+
+        return response
 
     def _get_parlamentares_by_bairros(self, data):
         response = {}

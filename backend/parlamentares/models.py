@@ -24,5 +24,16 @@ class Parlamentar(models.Model):
         max_length=300
     )
 
+    def to_json(self):
+        data = {
+            "nome": self.nome,
+            "deputado": self.deputado,
+            "img_url": self.img_url,
+            "telefone": self.telefone,
+            "email": self.email
+        }
+
+        return data
+        
     def __str__(self):
         return "%s - %s" % (self.nome, self.deputado) 

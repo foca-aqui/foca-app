@@ -1,4 +1,22 @@
 .dep-fed, .dep-est {
     padding: 10px;
-    display: inline-block
+    display: inline-block;
+    width: 100%;
+}
+.parlamentar {
+    margin: 30px;
+    background-color: #fff;
+    padding: 35px;
+}
+.photo {
+    width: 120px;
+}
+h1 {
+    font-size: 1.7rem;
+}
+h2 {
+    font-size: 1.3rem;
+}
+p {
+    font-size: 1rem;
 }

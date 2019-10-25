@@ -62,7 +62,6 @@ export default class Login extends Component {
                         parlamentares: res.data,
                         status: null
                     })
-                    console.log(this.state.parlamentares)
                 }
             } else {
                 this.setState({
