@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from parlamentares.models import Parlamentar
+
+admin.site.register(Parlamentar)
