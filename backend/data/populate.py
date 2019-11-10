@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import csv
-from data.models import OcorrenciasMesData, VotacaoMunZona, ZonasEleitorais, PoliciaDpsAreas, VotacaoBairro, BairrosZonas
+from data.models import OcorrenciasMesData, VotacaoMunZona, ZonasEleitorais, RendaDomicilios
 
 meta = ['CISP', 'mes', 'vano', 'mes_ano', 'AISP', 'RISP', 'munic', 'mcirc', 'Regiao']
 def populate_ocorrenciasmesdata(filepath=None, start_year=None):
@@ -53,7 +53,64 @@ def populate_ocorrenciasmesdata(filepath=None, start_year=None):
                             print(">>>> Salvando %s/%s - %s" % (mesdata_obj.mes, mesdata_obj.ano, mesdata_obj.municipio))
                         else:
                             print(">>>> Já salvo %s/%s - %s" % (query[0].mes, query[0].ano, query[0].municipio))
-                
+
+def perc(total, parte):
+    return parte/total * 100
+
+def populate_renda_domicilios(file_path=None):
+    if not file_path: 
+        file_path = "data/csv/censo2010_renda_domicilios.csv"
+    
+    with open(file_path, encoding="utf-8") as file:
+        csv_reader = csv.reader(file, delimiter=",")
+        line_count = 0
+        data = {}
+        for row in csv_reader:
+            if line_count == 0:
+                header = row
+                line_count += 1
+            else:
+                #import pdb; pdb.set_trace()
+                if row[header.index("Municipio")] == "RIO DE JANEIRO":
+                    if not row[header.index("Bairro")] in data:
+                        data[row[header.index("Bairro")]] = {
+                            "distrito": row[header.index("Distrito")],
+                            "até_meio_salario": int(row[header.index("até_meio_salario")] if row[header.index("até_meio_salario")] else 0),
+                            "acima_de_meio_salario_até_2salarios": int(row[header.index("acima_de_meio_salario_até_2salarios")] if row[header.index("acima_de_meio_salario_até_2salarios")] else 0),
+                            "acima_de_2salarios_até_5salarios": int(row[header.index("acima_de_2salarios_até_5salarios")] if row[header.index("acima_de_2salarios_até_5salarios")] else 0),
+                            "acima_de_5salarios_até_10salarios": int(row[header.index("acima_de_5salarios_até_10salarios")] if row[header.index("acima_de_5salarios_até_10salarios")] else 0),
+                            "acima_10salarios": int(row[header.index("acima_10salarios")] if row[header.index("acima_10salarios")] else 0),
+                            "sem_rendimentos": int(row[header.index("sem_rendimentos")] if row[header.index("sem_rendimentos")] else 0),
+                            "total_domicilios": int(row[header.index("total_domicilios")] if row[header.index("total_domicilios")] else 0)
+                        }
+                    else:
+                        data[row[header.index("Bairro")]]["até_meio_salario"] += int(row[header.index("até_meio_salario")] if row[header.index("até_meio_salario")] else 0)
+                        data[row[header.index("Bairro")]]["acima_de_meio_salario_até_2salarios"] += int(row[header.index("acima_de_meio_salario_até_2salarios")] if row[header.index("acima_de_meio_salario_até_2salarios")] else 0)
+                        data[row[header.index("Bairro")]]["acima_de_2salarios_até_5salarios"] += int(row[header.index("acima_de_2salarios_até_5salarios")] if row[header.index("acima_de_meio_salario_até_2salarios")] else 0)
+                        data[row[header.index("Bairro")]]["acima_de_5salarios_até_10salarios"] += int(row[header.index("acima_de_5salarios_até_10salarios")] if row[header.index("acima_de_5salarios_até_10salarios")] else 0)
+                        data[row[header.index("Bairro")]]["acima_10salarios"] += int(row[header.index("acima_10salarios")] if row[header.index("acima_10salarios")] else 0)
+                        data[row[header.index("Bairro")]]["sem_rendimentos"] += int(row[header.index("sem_rendimentos")] if row[header.index("sem_rendimentos")] else 0)
+                        data[row[header.index("Bairro")]]["total_domicilios"] += int(row[header.index("total_domicilios")] if row[header.index("total_domicilios")] else 0)
+        
+        for bairro in data:
+            #import pdb; pdb.set_trace()
+            reg = RendaDomicilios(
+                municipio="RIO DE JANEIRO",
+                distrito=data[bairro]["distrito"],
+                bairro=bairro,
+                meio_salario=perc(data[bairro]["total_domicilios"], data[bairro]["até_meio_salario"]),
+                meio_2salarios=perc(data[bairro]["total_domicilios"], data[bairro]["acima_de_meio_salario_até_2salarios"]),
+                de_2salarios_5salarios=perc(data[bairro]["total_domicilios"], data[bairro]["acima_de_2salarios_até_5salarios"]),
+                de_5salarios_10salarios=perc(data[bairro]["total_domicilios"], data[bairro]["acima_de_5salarios_até_10salarios"]),
+                acima_10salarios=perc(data[bairro]["total_domicilios"], data[bairro]["acima_10salarios"]),
+                sem_rendimentos=perc(data[bairro]["total_domicilios"], data[bairro]["sem_rendimentos"]),
+                total_domicilios=data[bairro]["total_domicilios"]
+            )
+
+            reg.save()
+            print(">>>> Salvo dados de %s" % reg.__str__())
+                    
+
 def populate_votacao_municipio_zona(file_path=None):
     if not file_path:
         file_path = "data/csv/votacao_candidato_munzona_2018_RJ.csv"

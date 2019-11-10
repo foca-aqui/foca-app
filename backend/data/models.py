@@ -107,3 +107,40 @@ class ZonasEleitorais(Model):
 
     def __str__(self):
         return "%s - %s" % (self.bairro, self.num)
+
+class RendaDomicilios(Model):
+    municipio = models.CharField(
+        max_length=300
+    )
+    distrito = models.CharField(
+        max_length=300
+    )
+    bairro = models.CharField(
+        max_length=300
+    )
+    meio_salario = models.FloatField()
+    meio_2salarios = models.FloatField()
+    de_2salarios_5salarios = models.FloatField()
+    de_5salarios_10salarios = models.FloatField()
+    acima_10salarios = models.FloatField()
+    sem_rendimentos = models.FloatField()
+    total_domicilios = models.IntegerField()
+
+    def __str__(self):
+        return "%s -%s" % (self.municipio, self.bairro)
+
+    def to_json(self):
+        data = {
+            "id": self.id,
+            "municipio": self.municipio,
+            "bairro": self.bairro,
+            "meio_salario": self.meio_salario,
+            "meio_2salarios": self.meio_2salarios,
+            "de_2salarios_5salarios": self.de_2salarios_5salarios,
+            "de_5salarios_10salarios": self.de_5salarios_10salarios,
+            "acima_10salarios": self.acima_10salarios,
+            "sem_rendimentos": self.sem_rendimentos,
+            "total_domicilios": self.total_domicilios
+        }
+    
+        return data
