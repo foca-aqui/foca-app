@@ -4,7 +4,7 @@ from django.db.models.query import QuerySet
 from api.mixins import APIViewMixin
 
 from parlamentares.models import Parlamentar
-from data.models import Bairro, OcorrenciasMesData, ZonasEleitorais, VotacaoMunZona
+from data.models import Bairro, OcorrenciasMesData, ZonasEleitorais, VotacaoMunZona, RendaDomicilios
 from api.constants import CRIMES_VIOLENTOS, CRIMES_DICT
 
 class ParlamentaresView(APIViewMixin):
@@ -62,6 +62,23 @@ class ParlamentaresView(APIViewMixin):
 
             response["federais"] = votacao_federal           
             response["estaduais"] = votacao_estadual
+        
+        return response
+
+class RendaDomiciliosView(APIViewMixin):
+    get_services = ("get_by_bairro", )
+
+    def _get_by_bairro(self, data):
+        response = []
+
+        bairro = data.get("bairro")
+        if bairro:
+            query = RendaDomicilios.objects.all().filter(
+                municipio="RIO DE JANEIRO",
+                bairro__contains=bairro
+            )
+            for q in query:
+                response.append(q.to_json())
         
         return response
 
