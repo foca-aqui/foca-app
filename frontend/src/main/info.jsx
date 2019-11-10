@@ -1,6 +1,7 @@
 import React, {Fragment} from 'react'
 
 import "./info.css"
+import Renda from "./renda"
 
 export default props => {
     if (props.state.ocorrencias && !props.state.status) {
@@ -16,6 +17,8 @@ export default props => {
                         </Fragment>
                     ))}
                 </ul>
+
+                <Renda state={props.state} />
             </Fragment>
         )
     } else {

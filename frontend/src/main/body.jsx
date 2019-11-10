@@ -11,7 +11,8 @@ const initialState = {
     "search": "",
     "ocorrencias": null,
     "bairros": null,
-    "status": null
+    "status": null,
+    "renda": null
 }
 const API_HOST = "http://localhost:8000/api/"
 
@@ -33,6 +34,7 @@ export default class Login extends Component {
 
     async search() {
         if (this.state.search.length > 2) {
+            // Pega as ocorrências do bairro pesquisado
             var params = {
                 "cmd": "get_top_ocorrencias_by_bairro",
                 "bairro": this.state.search
@@ -43,6 +45,16 @@ export default class Login extends Component {
                 params: params
             })
             if(response && !response.data.status) {
+                let renda_response = await axios({
+                    method: "get",
+                    url: `${API_HOST}rd/`,
+                    params: {"cmd": "get_by_bairro", "bairro": this.state.search}
+                })
+                if (renda_response) {
+                    this.setState({
+                        renda: renda_response.data
+                    })
+                }
                 var brs = ""
                 for (var i = 0; i < response.data.bairros.length; i++) {
                     brs += response.data.bairros[i] + ","
