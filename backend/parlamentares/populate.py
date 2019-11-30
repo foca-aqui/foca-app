@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json, csv
-from parlamentares.models import Parlamentar
+from parlamentares.models import Parlamentar, ParlamentaresVotacao
 
 def populate_estaduais(file_path=None):
     if not file_path:
@@ -64,3 +64,34 @@ def populate_federais(file_path=None):
                     obj.save()
                     print(">>>> Salvando %s" % obj.__str__())
 
+def populate_votacao(file_path=None):
+    if file_path:
+        with open(file_path, encoding="utf-8") as file:
+            csv_reader = csv.reader(file, delimiter=",")
+            line_count = 0
+            for row in csv_reader:
+                if line_count > 0 and row[4] == "6" or row[4] == "7" or row[4] == "13":
+                    #Verifica se o dado já existe
+                    query = ParlamentaresVotacao.objects.all().filter(
+                        ano=row[0],
+                        nome=row[7],
+                        zona=row[3]
+                    )
+                    if len(query) == 0:
+                        obj = ParlamentaresVotacao(
+                            ano=row[0],
+                            municipio=row[2],
+                            zona=row[3],
+                            cargo=row[5],
+                            nome=row[7],
+                            nome_urna=row[8],
+                            sg_partido=row[10],
+                            partido=row[11],
+                            votos=row[15],
+                            situacao=row[14],
+                            proporcao=row[16],
+                            porcentagem=row[17]
+                        )
+                        obj.save()
+
+                        print(">>> Salvo %s" % obj.__str__())

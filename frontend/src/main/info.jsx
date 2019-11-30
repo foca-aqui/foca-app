@@ -12,13 +12,13 @@ export default props => {
                     { props.state.ocorrencias.map( ocorrencias => (
                         <Fragment>
                             {Object.keys(ocorrencias).map( (key, value) => (
-                                <li> <label className="info-name">{ocorrencias[key]}</label> <label className="info-value">{key}</label> </li>
-                            ))}
+                                 <li> <label className="info-name">{ocorrencias[key]}</label> <label className="info-value">{key}</label> </li>
+                           ))}
                         </Fragment>
                     ))}
                 </ul>
 
-                <Renda state={props.state} />
+                
             </Fragment>
         )
     } else {

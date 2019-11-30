@@ -88,6 +88,7 @@ class OcorrenciasView(APIViewMixin):
 
     def _get_ocorrencias_by_bairro(self, data):
         bairro = data.get("bairro")
+        mes = data.get("mes")
         aisp = None
         for b in Bairro.objects.all():
             if bairro.lower() in b.nome.lower():
@@ -95,7 +96,7 @@ class OcorrenciasView(APIViewMixin):
         
         if aisp:
             return self._get_ocorrencias(
-                data={"aisp": aisp}
+                data={"aisp": aisp, "mes": mes}
             )
         else:
             return {"status": "informe um bairro válido"}
@@ -120,25 +121,28 @@ class OcorrenciasView(APIViewMixin):
         aisp = data.get("aisp")
         risp = data.get("risp")
         ano = data.get("ano")
+        mes = data.get("mes")
         if not ano:
             ano = datetime.now().year
+        if not mes:
+            mes = OcorrenciasMesData.objects.order_by('-pk')[0].mes
         
         if aisp:
             ocorrencias = OcorrenciasMesData.objects.all().filter(
                 ano=int(ano),
-                mes__lte=9,
+                mes=mes,
                 aisp=aisp
             )
         elif risp:
             ocorrencias = OcorrenciasMesData.objects.all().filter(
                 ano=int(ano),
-                mes__lte=9,
+                mes=mes,
                 risp=risp
             )
         else:
             ocorrencias = OcorrenciasMesData.objects.all().filter(
                 ano=int(ano),
-                mes__lte=9,
+                mes=mes,
             )
 
         indice = {

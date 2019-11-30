@@ -37,3 +37,52 @@ class Parlamentar(models.Model):
         
     def __str__(self):
         return "%s - %s" % (self.nome, self.deputado) 
+
+class ParlamentaresVotacao(models.Model):
+    ano = models.IntegerField()
+    municipio = models.CharField(
+        max_length=300
+    )
+    zona = models.IntegerField()
+    cargo = models.CharField(
+        max_length=300
+    )
+    nome = models.CharField(
+        max_length=300
+    )
+    nome_urna = models.CharField(
+        max_length=300
+    )
+    sg_partido = models.CharField(
+        max_length=300
+    )
+    partido = models.CharField(
+        max_length=300
+    )
+    votos = models.IntegerField()
+    proporcao = models.FloatField()
+    porcentagem = models.FloatField()
+    situacao = models.CharField(
+        max_length=300
+    )
+
+    def to_json(self):
+        data = {
+            "id": self.id,
+            "ano": self.ano,
+            "municipio": self.municipio,
+            "zona": self.zona,
+            "nome": self.nome,
+            "nome_urna": self.nome_urna,
+            "sg_partido": self.sg_partido,
+            "partido": self.partido,
+            "votos": self.votos,
+            "proporcao": self.proporcao,
+            "porcentagem": self.porcentagem
+        }
+
+        return data
+
+    def __str__(self):
+        return "%s - %s > %s" % (self.nome_urna, self.cargo, self.ano)
+
