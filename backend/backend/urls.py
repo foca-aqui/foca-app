@@ -19,7 +19,7 @@ from api.views import OcorrenciasView, ParlamentaresView, RendaDomiciliosView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/oc/', OcorrenciasView.as_view()),
+    path('api/ocorrencias/', OcorrenciasView.as_view()),
     path('api/ve/', ParlamentaresView.as_view()),
     path('api/rd/', RendaDomiciliosView.as_view())
 ]

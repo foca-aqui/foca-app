@@ -175,7 +175,12 @@ class OcorrenciasView(APIViewMixin):
                 ano=int(ano),
                 aisp=aisp
             )
-            response["bairros"] = [b.nome for b in Bairro.objects.all().filter(aisp=aisp)]
+            bairros = []
+            for b in Bairro.objects.all().filter(aisp=aisp):
+                if not b.nome in bairros:
+                    bairros.append(b.nome)
+            response["bairros"] = bairros
+            
         elif risp:
             ocorrencias = OcorrenciasMesData.objects.all().filter(
                 ano=int(ano),
